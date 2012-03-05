@@ -29,22 +29,22 @@ $GLOBALS['laravel_paths']['base'] = __DIR__.DS;
 // --------------------------------------------------------------
 // The path to the application directory.
 // --------------------------------------------------------------
-$paths['app'] = 'application';
+$paths['app'] = 'api';
 
 // --------------------------------------------------------------
 // The path to the Laravel directory.
 // --------------------------------------------------------------
-$paths['sys'] = 'laravel';
+$paths['sys'] = 'api/laravel';
 
 // --------------------------------------------------------------
 // The path to the bundles directory.
 // --------------------------------------------------------------
-$paths['bundle'] = 'bundles';
+$paths['bundle'] = 'api/bundles';
 
 // --------------------------------------------------------------
 // The path to the storage directory.
 // --------------------------------------------------------------
-$paths['storage'] = 'storage';
+$paths['storage'] = 'api/storage';
 
 // --------------------------------------------------------------
 // The path to the public directory.
@@ -70,11 +70,11 @@ foreach ($paths as $name => $path)
 
 /**
  * A global path helper function.
- * 
+ *
  * <code>
  *     $storage = path('storage');
  * </code>
- * 
+ *
  * @param  string  $path
  * @return string
  */
@@ -85,7 +85,7 @@ function path($path)
 
 /**
  * A global path setter function.
- * 
+ *
  * @param  string  $path
  * @param  string  $value
  * @return void

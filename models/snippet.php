@@ -1,9 +1,11 @@
 <?php
 
-class Snippet {
+class Snippet extends Model {
+
+	static $table = 'snippets';
 
 	public static function get($id) {
-		if ($snippet = DB::table('snippets')->where('id', '=', $id)->first()) {
+		if ($snippet = DB::table(static::$table)->where('id', '=', $id)->first()) {
 			foreach ($snippet as $k=>$v) {
 				if (is_numeric($v)) {
 					$snippet->$k = 0 + $v;
@@ -32,6 +34,13 @@ class Snippet {
 			$return[$doc->title] = $doc;
 		}
 		return $return;
+	}
+
+	public static function process($object, $strip = TRUE) {
+		$object->documents = Snippet::documents($object->id);
+		$object->votes = Snippet::votes($object->id);
+		$object->syntax = Snippet::get_primary_syntax($object);
+		return parent::process($object, $strip);
 	}
 
 	public static function get_primary_syntax($snippet) {
@@ -66,7 +75,7 @@ class Snippet {
 	}
 
 	public static function create($author, $title, $description = '') {
-		return DB::table('snippets')->insert_get_id(array(
+		return DB::table(static::$table)->insert_get_id(array(
 			'user_id' => $author,
 			'title' => $title,
 			'description' => $description,

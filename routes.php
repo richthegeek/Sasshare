@@ -71,12 +71,16 @@
 
 Event::listen('404', function()
 {
-	return Response::error('404');
+	return array(
+		'error' => '404 - Not Found'
+	);
 });
 
 Event::listen('500', function()
 {
-	return Response::error('500');
+	return array(
+		'error' => '500 - Internal Server Error'
+	);
 });
 
 /*
@@ -128,11 +132,15 @@ Route::filter('after', function($response)
 {
 	// Encode objects/arrays/booleans to JSON
 	if (is_array($response->content) || is_object($response->content) || is_bool($response->content)) {
-		header('Content-type: application/json');
+		if ((is_array($response->content) && isset($response->content['error'])) || (is_object($response->content) && isset($response->content->error))) {
+			$response->status = 400;
+		}
 		$response->content = json_encode($response->content);
+		$response->header('Content-Type', 'application/json; charset=UTF-8');
+		$response->header('Content-length', strlen($response->content));
 	}
 
-	// return $response;
+	return $response;
 });
 
 Route::filter('csrf', function()
