@@ -29,6 +29,10 @@ Route::get('documents/create', function() {
 		);
 	}
 
+	if (!isset($input['syntax'])) {
+		$input['syntax'] = substr($input['title'], strpos($input['title'], '.') + 1);
+	}
+
 	if ($id = Document::create($input['snippet_id'], $input)) {
 		return Redirect::to('documents/' . $id);
 	}

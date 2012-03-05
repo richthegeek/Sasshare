@@ -33,23 +33,26 @@
 |
 */
 
-$uri = explode('/', URI::current());
-array_push($uri, null);
-$folder = path('app') . 'routes/';
 
-while (count($uri)) {
-	array_pop($uri);
-	$file = $folder . implode('/', $uri) . '.php';
-	if (file_exists($file)) {
-		require_once ($file);
-		break;
-	}
-	$index = $folder . implode('/', $uri) . (count($uri) ? '/' : '') . 'index.php';
-	if (file_exists($index)) {
-		require_once ($index);
-		break;
-	}
-};
+// sequential router
+	$uri = explode('/', URI::current());
+	array_push($uri, null);
+	$folder = path('app') . 'routes/';
+
+	while (count($uri)) {
+		array_pop($uri);
+		$file = $folder . implode('/', $uri) . '.php';
+		if (file_exists($file)) {
+			require_once ($file);
+			break;
+		}
+		$index = $folder . implode('/', $uri) . (count($uri) ? '/' : '') . 'index.php';
+		if (file_exists($index)) {
+			require_once ($index);
+			break;
+		}
+	};
+
 
 /*
 |--------------------------------------------------------------------------
@@ -104,6 +107,18 @@ Event::listen('500', function()
 |
 */
 
+Route::filter('cache', function($response = NULL) {
+	$cname = 'response:' . Str::slug(URI::full());
+	if (!$response) {
+		return Cache::get($cname);
+	}
+	else {
+		if ($response->status == 200) {
+			Cache::put($cname, $response, 1);
+		}
+	}
+});
+
 Route::filter('before', function()
 {
 	// Do stuff before every request to your application...
@@ -114,10 +129,10 @@ Route::filter('after', function($response)
 	// Encode objects/arrays/booleans to JSON
 	if (is_array($response->content) || is_object($response->content) || is_bool($response->content)) {
 		header('Content-type: application/json');
-		print json_encode($response->content);
-		die;
+		$response->content = json_encode($response->content);
 	}
 
+	// return $response;
 });
 
 Route::filter('csrf', function()

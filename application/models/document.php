@@ -18,7 +18,7 @@ class Document {
 	public static function create($parent, $info) {
 		unset ($info['id']);
 		$info['snippet_id'] = $parent;
-		$info['created'] = $info['modified'] = time();
+		$info['created'] = $info['updated'] = time();
 
 		return DB::table('documents')->insert_get_id($info);
 	}

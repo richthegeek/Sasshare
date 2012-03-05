@@ -13,9 +13,9 @@ Route::get('snippets', function() {
 	);
 });
 
-Route::get('snippets/(:any)', function($id) {
+Route::get('snippets/(:any)',  array('before' => 'cache', 'after' => 'cache', function($id) {
 	if ($snip = Snippet::get($id)) {
 		return $snip;
 	}
 	return Redirect::error('404');
-});
+}));

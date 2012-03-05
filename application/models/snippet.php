@@ -11,6 +11,7 @@ class Snippet {
 			}
 			$snippet->documents = Snippet::documents($id);
 			$snippet->votes = Snippet::votes($id);
+			$snippet->syntax = Snippet::get_primary_syntax($snippet);
 		}
 
 		return $snippet;
@@ -31,6 +32,21 @@ class Snippet {
 			$return[$doc->title] = $doc;
 		}
 		return $return;
+	}
+
+	public static function get_primary_syntax($snippet) {
+		if (!isset($snippet->documents)) {
+			$snippet->documents = self::documents($snippet->id, 1);
+		}
+		$syntax = array();
+		foreach ($snippet->documents as $doc) {
+			if ($doc->syntax) {
+				$syntax += array($doc->syntax => 0);
+				$syntax[$doc->syntax]++;
+			}
+		}
+		asort($syntax);
+		return current(array_keys($syntax));
 	}
 
 	public static function votes($id) {
@@ -54,7 +70,8 @@ class Snippet {
 			'user_id' => $author,
 			'title' => $title,
 			'description' => $description,
-			'created' => time()
+			'created' => time(),
+			'updated' => time(),
 		));
 	}
 }

@@ -1,25 +1,25 @@
 <?php
 
-Route::get('user/info', function() {
+@include 'snippets.php';
+
+Route::get('user/info, user/info/me', function() {
 	if (!($user = Auth::user())) {
 		return FALSE;
 	}
-
-	return User::get($user->id);
+	return User::get($user->id, false);
 });
 
-Route::get('user/info/(:any)', function($username) {
+Route::get('user/info/(:any)',  array('before' => 'cache', 'after' => 'cache', function($username) {
 	// load based on username OR id
-	if ($username == 'me') {
-		return Redirect::to('user/info');
+	if ($user = Auth::user() && Auth::user()->username == trim($username)) {
+		return Redirect::to('user/info/me');
 	}
-	if ($user = User::get($username)) {
-		unset ($user->email, $user->settings);
+	if ($user = User::get($username, true)) {
 		return $user;
 	}
 
 	return Response::error('404');
-});
+}));
 
 Route::post('user/info', function() {
 	if (!$user = Auth::user()) {

@@ -19,8 +19,9 @@ Route::get('user/create', function() {
 		);
 	}
 
-	if (User::create($username, $email, $password)) {
-		return Redirect::to('user/login');
+	if ($user_id = User::create($input['username'], $input['email'], $input['password'])) {
+		Auth::login($user_id);
+		return Redirect::to('user/info');
 	}
 
 	return array(

@@ -7,9 +7,11 @@ Route::get('user', function() {
 		'POST ' . $path . '/login' => 'Login existing user account',
 		'POST ' . $path . '/logout' => 'Logout current user',
 		'POST ' . $path . '/create' => 'Create a new user',
-		'GET  ' . $path . '/info' => 'Information about current user',
+		'GET  ' . $path . '/info/me' => 'Information about current user',
 		'GET  ' . $path . '/info/:username' => 'Information about a specific user',
-		'POST ' . $path . '/info' => 'Edit current user information'
+		'POST ' . $path . '/info' => 'Edit current user information',
+		'GET  ' . $path . '/info/me/snippets' => 'Snippets of the current user',
+		'GET  ' . $path . '/info/:username/snippets' => 'Snippets of the specified user',
 	);
 });
 

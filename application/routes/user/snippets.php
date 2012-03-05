@@ -1,6 +1,17 @@
 <?php
 
-Route::get('snippets/list',  array('before' => 'cache', 'after' => 'cache', function() {
+Route::get('user/info/(:any)/snippets',  array('before' => 'cache', 'after' => 'cache', function($username) {
+	if ($username == 'me') {
+		if (!$user = Auth::user()) {
+			return array(
+				'error' => 'You must be logged in to view your own snippets'
+			);
+		}
+	}
+	else {
+		$user = User::get($username);
+	}
+
 	$count = (int) Input::get('count', 10);
 	$page = (int) Input::get('page', 0);
 	
@@ -20,6 +31,7 @@ Route::get('snippets/list',  array('before' => 'cache', 'after' => 'cache', func
 			(SELECT COUNT(*) FROM votes WHERE snippet_id = snippets.id AND direction < 0) as votes_down,
 			(SELECT SUM(direction) FROM votes WHERE snippet_id = snippets.id) as votes_total
 		FROM snippets
+		WHERE snippets.user_id = " . ((int) $user->id) . "
 		ORDER BY $order DESC
 		LIMIT " . ($page * $count) . ", " . $count);
 
@@ -31,6 +43,7 @@ Route::get('snippets/list',  array('before' => 'cache', 'after' => 'cache', func
 		}
 		$snippets[$i]->votes_total = (int) $snippet->votes_total;
 		$snippets[$i]->documents = Snippet::documents($snippet->id, 100);
+		$snippets[$i]->syntax = Snippet::get_primary_syntax($snippets[$i]);
 	}
 
 	return $snippets;
