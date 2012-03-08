@@ -118,7 +118,8 @@ Route::filter('cache', function($response = NULL) {
 	}
 	else {
 		if ($response->status == 200) {
-			Cache::put($cname, $response, 1);
+			$ctime = floor(pow(current(sys_getloadavg()) + 1, 5)); # cache for between 1 and 32 minutes
+			Cache::put($cname, $response, $ctime);
 		}
 	}
 });
